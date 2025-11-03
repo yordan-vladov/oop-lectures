@@ -1,0 +1,1 @@
+(Линк към примерно решение на задачата)[https://github.com/yordan-vladov/oop_hw_1_sample_dealership]
