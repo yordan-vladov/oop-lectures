@@ -32,8 +32,8 @@ public:
     void setName(const string& n) { name = n; }
     void setFacultyNumber(const string& fn) { facultyNumber = fn; }
     void setGpa(double g) {
-        if (g < 0.0 || g > 6.0)
-            throw invalid_argument("Средният успех трябва да е между 0 и 6.00");
+        if (g < 2.0 || g > 6.0)
+            throw invalid_argument("Средният успех трябва да е между 2.00 и 6.00");
         gpa = g;
     }
 
@@ -51,7 +51,7 @@ public:
 int Student::count = 0;
 
 // Демонстрация
-int main_student() {
+int main() {
     try {
         Student s1("Иван Петров", "F12345", 5.50);
         Student s2("Мария Георгиева", "F54321", 6.00);

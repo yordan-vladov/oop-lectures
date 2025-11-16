@@ -37,7 +37,7 @@ public:
 };
 
 // Демонстрация
-int main_book() {
+int main() {
     try {
         Book b("Престъпление и наказание", "Ф.М. Достоевски", 14.99);
         cout << b.to_string() << "\n";

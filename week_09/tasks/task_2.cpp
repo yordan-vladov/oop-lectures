@@ -37,7 +37,7 @@ public:
 };
 
 // Демонстрация
-int main_rectangle() {
+int main() {
     try {
         Rectangle r(4.5, 3.2);
         cout << r.to_string() << "\n";
