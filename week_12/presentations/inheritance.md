@@ -102,7 +102,7 @@ public:
 class Animal {
 public:
     Animal(const std::string& n) : name(n) {}
-protected:
+private:
     std::string name;
 };
 

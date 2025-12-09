@@ -6,18 +6,18 @@ Phone::Phone(const std::string& name, int initialBattery)
 }
 
 void Phone::start() {
-    std::cout << "Phone \"" << name << "\" is starting... (battery: "
+    std::cout << "Phone \"" << getName() << "\" is starting... (battery: "
               << battery << "%)\n";
 }
 
 void Phone::stop() {
-    std::cout << "Phone \"" << name << "\" is shutting down.\n";
+    std::cout << "Phone \"" << getName() << "\" is shutting down.\n";
 }
 
 void Phone::recharge() {
-    std::cout << "Recharging phone \"" << name << "\"...\n";
+    std::cout << "Recharging phone \"" << getName() << "\"...\n";
     battery = 100;
-    std::cout << "Phone \"" << name << "\" is now fully charged.\n";
+    std::cout << "Phone \"" << getName() << "\" is now fully charged.\n";
 }
 
 int Phone::batteryLevel() const {

@@ -13,6 +13,6 @@ public:
 
     std::string getName() const { return name; }
 
-protected:
+private:
     std::string name;
 };
