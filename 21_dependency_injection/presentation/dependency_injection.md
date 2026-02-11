@@ -1,213 +1,225 @@
-# Dependency Injection (DI)
+# Singleton
 
 ---
 
 ## Съдържание
 
-- Какво е зависимост в ООП
-- Какво е силна свързаност (Tight Coupling) и SOLID
-- Какво е Dependency Injection
-- Видове Dependency Injection
+* Какво представлява
+* Как се реализира
+* Кога се използва
+* Проблеми и ограничения
 
 ---
 
-## Какво е зависимост?
+## Припомняне: Класове и статични членове
 
-- В ООП една зависимост възниква, когато един клас използва друг клас, за да функционира.
+* Какво е клас?
+* Какво означава `static` член?
+* Каква е разликата между обект и клас?
+* Кога използваме private конструктор?
 
 ---
+
+## Проблемът
+
+- Представете си система, в която:
+    * Имаме логване във файл
+    * Имаме връзка към база данни
+    * Имаме глобална конфигурация
+
+---
+
+## Какво е Singleton?
+
+- Singleton е шаблон за проектиране, който:
+    * Позволява съществуването само на една инстанция
+    * Осигурява глобален достъп до нея
+    * Контролира създаването на обекта
+
+---
+
+## Основна идея
+
+- За да реализираме Singleton:
+    * Конструкторът е private
+    * Забраняваме копиране
+    * Имаме static метод `getInstance()`
+    * Имаме static променлива за инстанцията
+
+---
+
+## Класическа реализация (lazy initialization)
 
 ```cpp
-class Engine {
-public:
-    void start() {
-        std::cout << "Engine started\n";
-    }
-};
-
-class Car {
+class Singleton {
 private:
-    Engine engine;  
+    static Singleton* instance;
+    Singleton() {}
+
 public:
-    void drive() {
-        engine.start();
-    }
-};
-```
-
-`Car` зависи директно от `Engine`.
-
----
-
-## Какво е Tight Coupling?
-
-- Tight Coupling означава силна обвързаност между класове.
-- Характеристики:
-    * Класът създава сам своите зависимости
-    * Трудна подмяна на компоненти
-    * Трудно тестване
-- Проблем: Ако искаме ElectricEngine, трябва да променим класа Car.
-
----
-
-## Защо това е проблем?
-
-* Ниска гъвкавост
-* Нарушава добрите ООП практики
-* Затруднява unit testing
-* Води до трудна поддръжка
-
----
-
-## Какво е Dependency Injection?
-
-- Техника, при която обектът не създава сам своите зависимости, а ги получава отвън.
-- Цел:
-    * Намаляване на свързаността
-    * Работа с интерфейси 
-    * По-гъвкава архитектура
-
----
-
-## Видове Dependency Injection
-
-- **Constructor Injection:** Зависимостта се подава чрез конструктора. Най-често използван.
-- **Setter Injection:** Зависимостта се подава чрез setter метод.
-- **Interface Injection:** По-рядко използван подход.
-  
----
-
-## Създаване на абстракция
-
-```cpp
-class IEngine {
-public:
-    virtual void start() = 0;
-    virtual ~IEngine() {}
-};
-```
-
-- Работим с интерфейс, а не с конкретен клас.
-
----
-
-## Конкретни реализации
-
-```cpp
-class PetrolEngine : public IEngine {
-public:
-    void start() override {
-        std::cout << "Petrol engine started\n";
-    }
-};
-
-class ElectricEngine : public IEngine {
-public:
-    void start() override {
-        std::cout << "Electric engine started\n";
+    static Singleton* getInstance() {
+        if (instance == nullptr)
+            instance = new Singleton();
+        return instance;
     }
 };
 ```
 
 ---
 
-## Constructor Injection
+## Проблеми при тази реализация
+
+* Memory leak (няма delete)
+* Не е thread-safe
+* Сложност при управление на ресурси
+
+---
+
+## Eager Initialization
 
 ```cpp
-class Car {
+class Singleton {
 private:
-    IEngine* engine;
+    static Singleton instance;
+    Singleton() {}
 
 public:
-    Car(IEngine* eng) : engine(eng) {}
+    static Singleton& getInstance() {
+        return instance;
+    }
+};
 
-    void drive() {
-        engine->start();
+Singleton Singleton::instance;
+```
+---
+- **Проблеми:**
+    * Обектът се създава винаги 
+    * Проблеми с реда на инициализация
+    * Липса на lazy loading
+
+---
+
+## Meyers Singleton (C++11+)
+
+```cpp
+class Singleton {
+private:
+    Singleton() {}
+
+public:
+    static Singleton& getInstance() {
+        static Singleton instance;
+        return instance;
     }
 };
 ```
-
-- Car не създава Engine. Получава го отвън.
-
 ---
-
-## Използване
-
-```cpp
-int main() {
-    PetrolEngine petrol;
-    Car car(&petrol);
-    car.drive();
-}
-```
-
----
-
-- Смяна на зависимост:
-
-```cpp
-ElectricEngine electric;
-Car ecoCar(&electric);
-ecoCar.drive();
-```
-
-- Без промяна в класа Car.
-
----
-
-## Подобрение със Smart Pointers
-
-```cpp
-#include <memory>
-
-class Car {
-private:
-    std::shared_ptr<IEngine> engine;
-
-public:
-    Car(std::shared_ptr<IEngine> eng) : engine(eng) {}
-};
-```
-
----
-
 - **Предимства:**
-    * Безопасно управление на паметта
-    * Избягване на memory leaks
+    * Lazy initialization
+    * Thread-safe
+    * Няма memory leak
+    * Най-добра практика
+---
+
+# Примери
 
 ---
 
-## Предимства на Dependency Injection
+## Logger
 
-* По-ниска свързаност
-* По-лесно тестване
-* Спазване на SOLID
-* По-добра разширяемост
-* По-добра поддръжка
+**Проблем:** Не искаме всички логове да пишат в един файл.
+
+```cpp
+class Logger {
+private:
+    ofstream file;
+    Logger() { file.open("log.txt"); }
+
+public:
+    static Logger& getInstance() {
+        static Logger instance;
+        return instance;
+    }
+
+    void log(const string& msg) {
+        file << msg << endl;
+    }
+};
+```
+
+---
+
+## Връзка към база данни
+
+**Проблем:** Създаването на множество връзки към БД е скъпо.
+
+```cpp
+class DatabaseConnection {
+private:
+    DatabaseConnection() {}
+
+public:
+    static DatabaseConnection& getInstance() {
+        static DatabaseConnection instance;
+        return instance;
+    }
+
+    void query(string sql) {
+        cout << sql << endl;
+    }
+};
+```
+
+---
+
+## Конфигурационен клас
+
+**Проблем:** Конфигурацията трябва да е една и съща навсякъде.
+
+```cpp
+class Config {
+private:
+    map<string,string> settings;
+    Config() { settings["mode"] = "debug"; }
+
+public:
+    static Config& getInstance() {
+        static Config instance;
+        return instance;
+    }
+
+    string get(string key) {
+        return settings[key];
+    }
+};
+```
 
 ---
 
 ## Недостатъци
 
-* Повече абстракции
-* Повече код
-* Може да усложни малки проекти
+* Скрит глобален обект
+* Трудно тестване
+* Нарушава SRP
+* Създава силна зависимост
+
+---
+
+## Кога е подходящ?
+
+- Подходящ: 
+    * Логически има само една инстанция
+    * Управлява глобален ресурс
+---
+- Неподходящ:
+    * За удобство
+    * Като универсално решение
 
 ---
 
 ## Практическа задача
 
-1. Създайте интерфейс ILogger.
-2. Реализирайте ConsoleLogger и FileLogger.
-3. Създайте клас Application, който получава ILogger чрез constructor injection.
-4. Демонстрирайте смяна на логера без промяна в Application.
-
----
-
-## Обобщение
-
-- Dependency Injection означава:
-    * Не създавай зависимостите вътре в класа
-    * Получавай ги отвън
-    * Работи с абстракции
-    * Следвай Dependency Inversion Principle
+- Създайте клас `ApplicationState`, който:
+    * е Singleton
+    * съхранява текущ потребител (username)
+    * има методи `setUser()` и `getUser()`
