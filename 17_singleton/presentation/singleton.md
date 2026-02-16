@@ -22,32 +22,29 @@
 
 ## Проблемът
 
-Представете си система, в която:
-
-* Имаме логване във файл
-* Имаме връзка към база данни
-* Имаме глобална конфигурация
+- Представете си система, в която:
+    * Имаме логване във файл
+    * Имаме връзка към база данни
+    * Имаме глобална конфигурация
 
 ---
 
 ## Какво е Singleton?
 
-Singleton е шаблон за проектиране, който:
-
-* Позволява съществуването само на една инстанция
-* Осигурява глобален достъп до нея
-* Контролира създаването на обекта
+- Singleton е шаблон за проектиране, който:
+    * Позволява съществуването само на една инстанция
+    * Осигурява глобален достъп до нея
+    * Контролира създаването на обекта
 
 ---
 
 ## Основна идея
 
-За да реализираме Singleton:
-
-* Конструкторът е private
-* Забраняваме копиране
-* Имаме static метод `getInstance()`
-* Имаме static променлива за инстанцията
+- За да реализираме Singleton:
+    * Конструкторът е private
+    * Забраняваме копиране
+    * Имаме static метод `getInstance()`
+    * Имаме static променлива за инстанцията
 
 ---
 
@@ -57,7 +54,12 @@ Singleton е шаблон за проектиране, който:
 class Singleton {
 private:
     static Singleton* instance;
+
     Singleton() {}
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    Singleton(Singleton&&) = delete;
+    Singleton& operator=(Singleton&&) = delete;
 
 public:
     static Singleton* getInstance() {
@@ -66,6 +68,8 @@ public:
         return instance;
     }
 };
+
+Singleton* Singleton::instance = nullptr;
 ```
 
 ---
@@ -84,7 +88,12 @@ public:
 class Singleton {
 private:
     static Singleton instance;
+
     Singleton() {}
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    Singleton(Singleton&&) = delete;
+    Singleton& operator=(Singleton&&) = delete;
 
 public:
     static Singleton& getInstance() {
@@ -92,10 +101,8 @@ public:
     }
 };
 
-Singleton Singleton::instance;
 ```
 ---
-
 - **Проблеми:**
     * Обектът се създава винаги 
     * Проблеми с реда на инициализация
@@ -109,6 +116,10 @@ Singleton Singleton::instance;
 class Singleton {
 private:
     Singleton() {}
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    Singleton(Singleton&&) = delete;
+    Singleton& operator=(Singleton&&) = delete;
 
 public:
     static Singleton& getInstance() {
@@ -116,14 +127,16 @@ public:
         return instance;
     }
 };
-```
----
 
+```
+
+---
 - **Предимства:**
     * Lazy initialization
     * Thread-safe
     * Няма memory leak
     * Най-добра практика
+
 ---
 
 # Примери
@@ -139,7 +152,10 @@ class Logger {
 private:
     ofstream file;
     Logger() { file.open("log.txt"); }
-
+	Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+    Logger(Logger&&) = delete;
+    Logger& operator=(Logger&&) = delete;
 public:
     static Logger& getInstance() {
         static Logger instance;
@@ -162,6 +178,10 @@ public:
 class DatabaseConnection {
 private:
     DatabaseConnection() {}
+    DatabaseConnection(const DatabaseConnection&) = delete;
+    DatabaseConnection& operator=(const DatabaseConnection&) = delete;
+    DatabaseConnection(DatabaseConnection&&) = delete;
+    DatabaseConnection& operator=(DatabaseConnection&&) = delete;
 
 public:
     static DatabaseConnection& getInstance() {
@@ -186,6 +206,10 @@ class Config {
 private:
     map<string,string> settings;
     Config() { settings["mode"] = "debug"; }
+	Config(const Config&) = delete;
+    Config& operator=(const Config&) = delete;
+    Config(Config&&) = delete;
+    Config& operator=(Config&&) = delete;    
 
 public:
     static Config& getInstance() {
@@ -212,24 +236,21 @@ public:
 
 ## Кога е подходящ?
 
-Подходящ:
-
-* Логически има само една инстанция
-* Управлява глобален ресурс
+- Подходящ: 
+    * Логически има само една инстанция
+    * Управлява глобален ресурс
 
 ---
 
-Неподходящ:
-
-* За удобство
-* Като универсално решение
+- Неподходящ:
+    * За удобство
+    * Като универсално решение
 
 ---
 
 ## Практическа задача
 
-Създайте клас `ApplicationState`, който:
-
-* Е Singleton
-* Съхранява текущ потребител (username)
-* Има методи `setUser()` и `getUser()`
+- Създайте клас `ApplicationState`, който:
+    * е Singleton
+    * съхранява текущ потребител (username)
+    * има методи `setUser()` и `getUser()`
