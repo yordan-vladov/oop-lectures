@@ -1,7 +1,7 @@
 #pragma once
 #include "core/IButton.h"
 
-class WindowsButton : public IButton {
+class DarkButton : public IButton {
 public:
     void render() const override;
 };

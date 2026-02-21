@@ -1,13 +1,13 @@
 #include "core/GUIFactory.h"
-#include "factories/WindowsFactory.h"
-#include "factories/MacFactory.h"
+#include "factories/DarkFactory.h"
+#include "factories/LightFactory.h"
 #include "core/GUIFactory.h"
 #include "core/IButton.h"
 #include "core/ICheckBox.h"
 #include "core/ITextBox.h"
 
-#include "factories/WindowsFactory.h"
-#include "factories/MacFactory.h"
+#include "factories/DarkFactory.h"
+#include "factories/LightFactory.h"
 
 
 #include <iostream>
@@ -29,11 +29,11 @@ static void renderUI(const GUIFactory& factory, const std::string& name) {
 }
 
 int main() {
-    WindowsFactory windows;
-    MacFactory mac;
+    DarkFactory dark;
+    LightFactory light;
 
-    renderUI(windows, "Windows");
-    renderUI(mac, "Mac");
+    renderUI(dark, "Dark");
+    renderUI(light, "Light");
 
     return 0;
 }

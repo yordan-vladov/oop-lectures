@@ -1,7 +1,7 @@
 #pragma once
 #include "core/ITextBox.h"
 
-class WindowsTextBox : public ITextBox {
+class LightTextBox : public ITextBox {
 public:
     void render() const override;
 };

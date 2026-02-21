@@ -22,32 +22,30 @@ Cat* cat = new Cat();
 
 ---
 
-**Проблем:**
-
-* Клиентският код знае конкретния клас
-* Силна зависимост (tight coupling)
-* Трудно разширение
+- **Проблем:**
+    * Клиентският код знае конкретния клас
+    * Силна зависимост (tight coupling)
+    * Трудно разширение
 
 ---
 
 ## Какъв проблем решава Factory?
 
-Имаме система за създаване на различни елементи:
-
-* Car
-* Truck
-* Motorcycle
+- Имаме система за създаване на различни елементи:
+    * Car
+    * Truck
+    * Motorcycle
 
 ---
 
-Ако използваме много if/else:
+- Ако използваме много if/else:
 
 ```cpp
 if(type == "car") return new Car();
 else if(type == "truck") return new Truck();
 ```
 
-При добавяне на нов тип трябва да променяме съществуващ код.
+- При добавяне на нов тип трябва да променяме съществуващ код.
 
 ---
 
@@ -55,17 +53,14 @@ else if(type == "truck") return new Truck();
 
 ### Дефиниция
 
-Софтуерните компоненти трябва да бъдат:
-
-* Отворени за разширение
-* Затворени за модификация
+- Софтуерните компоненти трябва да бъдат:
+    * Отворени за разширение
+    * Затворени за модификация
 
 ---
 
-Това означава:
-
-Можем да добавяме ново поведение чрез нови класове,
-без да променяме вече работещия код.
+- Това означава:
+    - Можем да добавяме ново поведение чрез нови класове, без да променяме вече работещия код.
 
 ---
 
@@ -77,7 +72,7 @@ else if(type == "square") ...
 else if(type == "triangle") ...
 ```
 
-Всеки нов тип изисква редакция на съществуващ код.
+- Всеки нов тип изисква редакция на съществуващ код.
 
 ---
 
@@ -87,15 +82,15 @@ else if(type == "triangle") ...
 * Новите типове се добавят чрез нов клас
 * Промените са локализирани
 
-Така системата е по-стабилна и разширяема.
+- Така системата е по-стабилна и разширяема.
 
 ---
 
 ## Какво е Factory Pattern?
 
-Factory е шаблон за проектиране, който делегира създаването на обекти към специален клас (фабрика).
+- Factory е шаблон за проектиране, който делегира създаването на обекти към специален клас (фабрика).
 
-Обектите се създават чрез метод, а не директно с `new`.
+- Обектите се създават чрез метод, а не директно с `new`.
 
 ---
 
@@ -111,7 +106,7 @@ Factory е шаблон за проектиране, който делегира
 
 ## Пример: Shape Factory
 
-Абстрактен клас:
+- Абстрактен клас:
 
 ```cpp
 class Shape {
@@ -123,7 +118,7 @@ public:
 
 ---
 
-Конкретни класове:
+- Конкретни класове:
 
 ```cpp
 class Circle : public Shape {
@@ -143,7 +138,7 @@ public:
 
 ---
 
-Factory клас:
+- Factory клас:
 
 ```cpp
 class ShapeFactory {
@@ -161,7 +156,7 @@ public:
 
 ---
 
-Използване:
+- Използване:
 
 ```cpp
 int main() {
@@ -195,6 +190,172 @@ public:
 };
 ```
 
+
+---
+
+## Проблем с текущата реализация
+
+```cpp
+static unique_ptr<Shape> createShape(string type) {
+    if (type == "circle")
+        return make_unique<Circle>();
+    else if (type == "square")
+        return make_unique<Square>();
+    return nullptr;
+}
+```
+
+* При добавяне на нов клас трябва да променим фабриката.
+* Това нарушава принципа Open/Closed.
+* Фабриката расте с всеки нов тип.
+
+---
+
+## Решение: Factory с регистър (Registry-based Factory)
+
+Идея:
+
+* Фабриката не знае конкретните класове.
+* Всеки клас сам се регистрира във фабриката.
+* При добавяне на нов тип не се променя фабриката.
+
+---
+
+## Реализация: ShapeFactory с регистър
+
+```cpp
+#include <memory>
+#include <unordered_map>
+#include <functional>
+#include <string>
+
+class Shape;
+
+class ShapeFactory {
+public:
+    using Creator = std::function<std::unique_ptr<Shape>()>;
+
+    static bool registerType(const std::string& type, Creator creator) {
+        registry()[type] = creator;
+        return true;
+    }
+
+    static std::unique_ptr<Shape> createShape(const std::string& type) {
+        auto it = registry().find(type);
+        if (it != registry().end())
+            return it->second();
+        return nullptr;
+    }
+
+private:
+    static std::unordered_map<std::string, Creator>& registry() {
+        static std::unordered_map<std::string, Creator> instance;
+        return instance;
+    }
+};
+```
+
+---
+
+## Саморегистрация на Circle
+
+```cpp
+class Circle : public Shape {
+public:
+    void draw() override {
+        std::cout << "Drawing Circle\n";
+    }
+};
+
+namespace {
+    const bool registered =
+        ShapeFactory::registerType("circle", [] {
+            return std::make_unique<Circle>();
+        });
+}
+```
+
+---
+
+## Саморегистрация на Square
+
+```cpp
+class Square : public Shape {
+public:
+    void draw() override {
+        std::cout << "Drawing Square\n";
+    }
+};
+
+namespace {
+    const bool registered =
+        ShapeFactory::registerType("square", [] {
+            return std::make_unique<Square>();
+        });
+}
+```
+
+---
+
+## Добавяне на нов тип (Triangle)
+
+```cpp
+class Triangle : public Shape {
+public:
+    void draw() override {
+        std::cout << "Drawing Triangle\n";
+    }
+};
+
+namespace {
+    const bool registered =
+        ShapeFactory::registerType("triangle", [] {
+            return std::make_unique<Triangle>();
+        });
+}
+```
+
+* Не променяме фабриката.
+* Не променяме main().
+* Добавяме само нов клас.
+
+---
+
+## Защо това спазва OCP?
+
+* Фабриката не се модифицира.
+* Новото поведение се добавя чрез нов клас.
+* Системата е отворена за разширение, затворена за модификация.
+
+---
+
+## Сравнение
+
+| Simple Factory             | Factory с регистър              |
+| -------------------------- | ------------------------------- |
+| Използва if/else           | Използва map от функции         |
+| Нарушава OCP               | Спазва OCP                      |
+| По-лесна за разбиране      | По-гъвкава                      |
+| Подходяща за малки системи | Подходяща за разширяеми системи |
+
+---
+
+## Кога да използваме регистър?
+
+* Plugin системи
+* Game engines
+* Системи с динамично добавяне на типове
+* Framework-и
+
+---
+
+## Обобщение
+
+* Simple Factory централизира създаването, но не гарантира OCP.
+* Registry-based Factory премахва нуждата от if/else.
+* Добавянето на нов тип не изисква промяна в съществуващ код.
+* Това е по-близко до реални индустриални реализации.
+
 ---
 
 ## Предимства
@@ -216,29 +377,25 @@ public:
 
 ## Практическа задача
 
-Създайте Factory за GUI библиотека.
-
-Системата трябва да създава различни графични компоненти:
-
-* Button
-* TextBox
-* CheckBox
+- Създайте Factory за GUI библиотека.
+- Системата трябва да създава различни графични компоненти:
+    * Button
+    * TextBox
+    * CheckBox
 
 ---
 
-Изисквания:
-
-* Абстрактен клас `UIElement` с виртуален метод `render()`
-* Класове `Button`, `TextBox`, `CheckBox`, които наследяват `UIElement`
-* Клас `UIFactory` със static метод `createElement(string type)`
-* Демонстрация в main()
-* Да се използва `unique_ptr`
+- Изисквания:
+    * Абстрактен клас `UIElement` с виртуален метод `render()`
+    * Класове `Button`, `TextBox`, `CheckBox`, които наследяват `UIElement`
+    * Клас `UIFactory` със static метод `createElement(string type)`
+    * Демонстрация в main()
+    * Да се използва `unique_ptr`
 
 ---
 
-Допълнително предизвикателство:
-
-Добавете нов компонент `Slider`, без да променяте клиентския код в main().
+- Допълнително предизвикателство:
+    - Добавете нов компонент `Slider`, без да променяте клиентския код в main().
 
 ---
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "core/IButton.h"
 
-class MacButton : public IButton {
+class LightButton : public IButton {
 public:
     void render() const override;
 };

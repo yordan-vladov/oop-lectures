@@ -1,7 +1,7 @@
 #pragma once
 #include "core/GUIFactory.h"
 
-class MacFactory : public GUIFactory {
+class DarkFactory : public GUIFactory {
 public:
     std::unique_ptr<IButton> createButton() const override;
     std::unique_ptr<ICheckBox> createCheckBox() const override;

@@ -1,7 +1,7 @@
 #pragma once
 #include "core/ICheckBox.h"
 
-class MacCheckBox : public ICheckBox {
+class DarkCheckBox : public ICheckBox {
 public:
     void render() const override;
 };
