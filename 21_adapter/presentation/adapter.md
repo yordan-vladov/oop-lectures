@@ -118,6 +118,10 @@ Adapter е шаблон за проектиране, който:
 
 ---
 
+![Adapter UML](https://media.geeksforgeeks.org/wp-content/uploads/20250905161148734950/Adapter-Design-Pattern.webp)
+
+---
+
 ## Пример: Media Player
 
 ### Target интерфейс

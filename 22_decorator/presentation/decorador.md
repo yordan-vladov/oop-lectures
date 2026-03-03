@@ -106,6 +106,10 @@ Decorator е шаблон за проектиране, който позволя
 
 ---
 
+![Decorator UML](https://www.tutorialspoint.com/design_pattern/images/decorator_pattern_uml_diagram.jpg)
+
+---
+
 ## Пример: Coffee система
 
 ### Абстрактен компонент
