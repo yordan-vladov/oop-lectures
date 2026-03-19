@@ -357,7 +357,7 @@ sensor.setValue(42);  // notify() → display.update(42), logger.update(42)
 
 ## Кога се използва?
 
-GUI события, stock market, game engines, notification системи, MVC
+GUI събития, stock market, game engines, notification системи, MVC
 
 ---
 
