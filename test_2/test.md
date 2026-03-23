@@ -1,4 +1,4 @@
-# Тест — Теми 15–25: Design Patterns и SOLID
+# Тест - Теми 15–25: Design Patterns и SOLID
 
 **Продължителност:** 45 минути | **Максимален брой точки:** 30
 
@@ -37,9 +37,9 @@
 
 **4.** Каква е основната разлика между Factory и Abstract Factory?
 
-- а) Abstract Factory използва наследяване, Factory — не
+- а) Abstract Factory използва наследяване, Factory - не
 - б) Factory е по-сложен
-- в) Factory създава един продукт, Abstract Factory — семейство от свързани продукти
+- в) Factory създава един продукт, Abstract Factory - семейство от свързани продукти
 - г) Няма разлика
 
 ---
