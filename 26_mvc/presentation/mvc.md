@@ -1,6 +1,4 @@
-# Model-View-Controller в C++
-
-### Обектно-ориентирано програмиране — Архитектурни шаблони
+# Model-View-Controller
 
 ---
 
