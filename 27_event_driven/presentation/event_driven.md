@@ -362,7 +362,8 @@ public:
         if (hp <= 0) {
             bus.publish(Event("heroDied"));
         }
-    }
+    } 	
+5 	Математика 	
 };
 ```
 
