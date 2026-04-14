@@ -11,7 +11,7 @@
 5. Event Bus — централизирана система
 6. Реален пример: игра с герой
 7. Observer vs Event-Driven — сравнение
-8. Резюме
+8. Обобщение
 
 ---
 
@@ -184,6 +184,39 @@ int main() {
     return 0;
 }
 ```
+
+---
+
+
+- Ако искаме събитията да обработват данни:
+
+```cpp
+int main() {
+    EventEmitter emitter;
+
+    // Регистрираме слушатели
+    emitter.on("click", [](const Event& e) {
+        auto button = std::any_cast<std::string>(e.data);
+        std::cout << "[Logger] Бутонът е натиснат: " << button << "\n";
+    });
+
+    emitter.on("click", [](const Event& e) {
+        std::cout << "[UI] Обновяване на интерфейса\n";
+    });
+
+    emitter.on("hover", [](const Event& e) {
+        auto [x, y] = std::any_cast<std::pair<int,int>>(e.data);
+        std::cout << "[UI] Показване на tooltip при (" << x << ", " << y << ")\n";
+    });
+
+    // Публикуваме събитие
+    emitter.emit(Event("click", std::string("left_button"))); // → извиква Logger и UI
+    emitter.emit(Event("hover", std::pair<int,int>{120, 340})); // → извиква само tooltip
+
+    return 0;
+}
+```
+
 
 ---
 
@@ -465,7 +498,7 @@ Event-Driven → когато много независими компонент
 
 ---
 
-## Резюме
+## Обобщение
 
 ```
 Event-Driven Design = компонентите комуникират чрез събития
